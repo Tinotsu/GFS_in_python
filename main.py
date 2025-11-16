@@ -2,28 +2,11 @@ import os
 import csv
 import cmd
 
-def main():
-    print("Hello from gfs!")
-
-
-def get_files_info(directory="."):
-
-    print("Result for current directory:")
-
-    for f in os.listdir(directory):
-        fp = directory + "/" + f
-        directory_content = f"- {f}: file_size={os.path.getsize(fp)} bytes, is_dir={os.path.isdir(fp)}"
-        print(f"{directory_content}")
-
-
 class MyCLI(cmd.Cmd):
     prompt = 'GFS ~ '
     intro = 'Welcome to GFS. Type "help" for available commands.'
     file = 'GFS.csv'
-
-    def do_hello(self, line):
-        """Print a greeting."""
-        print("Hello, World!")
+    temp_file = 'temp.csv'
 
     def do_help(self, line):
         print("This is an application to manage your files like a graph system.")
@@ -35,22 +18,31 @@ class MyCLI(cmd.Cmd):
                     print(line)
 
     def do_tag(self, tag):
-        with open(self.file, 'r') as f:
+        def add_tag(tag):
+            with open(self.file, 'a', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow([tag])
+        with open(self.file, 'r', newline='') as f:
             for line in f:
-                if ('t$ ' + tag) == line:
-                    print(f't$ {tag} is a tag')
-                    break
-                else:
-                    with open(self.file, 'a') as f:
-                        writer = csv.writer(f)
-                        writer.writerow(['t$ '+tag])
-                    break
+                if tag == line.strip():
+                    print(f"{tag} is already a tag.")
+                    return
+            add_tag(tag)
+
+    def do_delete(self, arg):
+        with open(self.file, newline='') as infile, \
+                open(self.temp_file, 'w', newline='') as outfile:
+                    reader = csv.reader(infile)
+                    writer = csv.writer(outfile)
+                    for line in reader:
+                        obj = ''.join(line)
+                        if obj != arg:
+                            writer.writerow(line)
+        os.replace(self.temp_file, self.file)
+
 
     def do_quit(self, line):
-        """Exit the CLI."""
         return True
 
 if __name__ == "__main__":
-    main()
-    # get_files_info()
     MyCLI().cmdloop()
