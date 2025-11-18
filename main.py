@@ -1,9 +1,11 @@
 import argparse
+import subprocess
 import os
 import csv
 
 file = 'gfs.txt'
 temp_file = 'temp.txt'
+sha_file = 'sha.txt'
 
 parser = argparse.ArgumentParser(
         prog='gfs',
@@ -23,6 +25,8 @@ parser.add_argument('-f', '--file', type=str, nargs='*',\
 parser.add_argument('-m', '--merge', type=str, nargs=2,\
         help='Merge the name of a tag. The first element is the old name and the second the one.')
 parser.add_argument('-a', '--arg_tester', nargs='*')
+parser.add_argument('-st', '--status')
+parser.add_argument('-sha', '--get_sha')
 
 args = parser.parse_args()
 
@@ -47,11 +51,72 @@ def get_ext(obj):
     ext = ''.join(rev_ext[::-1])
     return ext
 
+def get_sha(file):
+    sha = subprocess.check_output(["sha256sum", file], text=True)
+    return sha.split()[0]
+
+def get_file_name(obj):
+    rev_text = []
+    rev_obj = obj[::-1]
+    for c in rev_obj:
+        if c == '/':
+            break
+        rev_text.append(c)
+    file = ''.join(rev_text[::-1])
+    return file
+
+def find_moved(file):
+    path = os.path.expanduser("~/")
+    file_name = get_file_name(file)
+    file_path = subprocess.check_output(['find', path, '-name', file_name], text=True)
+    return file_path
+
+def find_renamed(obj):
+    list_file_dir = os.listdir()
+    result = None
+    for file_dir in list_file_dir:
+        if os.path.isfile(file_dir):
+            with open(sha_file, newline='') as f:
+                list_file_sha = csv.reader(f)
+                for file_sha in list_file_sha:
+                    sha_file_dir = get_sha(file_dir)
+                    if sha_file_dir == file_sha[1]:
+                        result = file_dir
+    return result
+
+
+def write_sha():
+    with open(file, newline='') as infile, \
+            open(sha_file, 'w', newline='') as outfile:
+                reader = csv.reader(infile)
+                writer = csv.writer(outfile)
+                for line in reader:
+                    if '.' in line[0]:
+                        row = get_sha(line[0])
+                        new_row = [line[0], row]
+                        writer.writerow(new_row)
+    
 if args.arg_tester:
-    for arg in args.arg_tester:
-        print(f'- {arg}')
-        print(get_full_path(arg))
-    # print(args.arg_tester)
+    result =get_sha(args.arg_tester[0]) 
+    print(result)
+
+if args.status:
+    with open(file, newline='') as f:
+        reader = csv.reader(f)
+        for line in reader:
+            obj = line[0]
+            if '.' in obj:
+                exists = os.path.exists(obj)
+                if exists:
+                    print(f'file {obj} exists')
+                else:
+                    print(f'file {obj} not here \n')
+                    moved = find_moved(obj)
+                    if moved:
+                        print(f'your file is here: {moved}')
+                    else:
+                        modified = find_renamed(obj)
+                        print(obj,' modified in ',modified)
 
 if args.print :
     arg = None
@@ -217,3 +282,4 @@ if args.file is not None:
                                 line.append(tag)
                     writer.writerow(line)
     os.replace(temp_file, file)
+    write_sha()

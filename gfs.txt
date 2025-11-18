@@ -1,6 +1,6 @@
 /home/tino/Work/GFS/eggs.txt,green,blue
 green,/home/tino/Work/GFS/eggs.txt
-red,/home/tino/Work/GFS/test/file.c,/home/tino/Work/GFS/test/concept_moto.png
+red,/home/tino/Work/GFS/test/file.c,/home/tino/Work/GFS/test/concept_moto.png,/home/tino/Work/GFS/test/red_text.pdf
 blue,/home/tino/Work/GFS/eggs.txt,/home/tino/Work/GFS/test/concept_moto2.png,/home/tino/Work/GFS/test/concept_moto.png
 pink,/home/tino/Work/GFS/test/test.pdf
 /home/tino/Work/GFS/test/test.pdf,pink
@@ -8,3 +8,4 @@ code,/home/tino/Work/GFS/test/file.c
 /home/tino/Work/GFS/test/file.c,code,red
 /home/tino/Work/GFS/test/concept_moto2.png,blue
 /home/tino/Work/GFS/test/concept_moto.png,blue,red
+/home/tino/Work/GFS/test/red_text.pdf,red
