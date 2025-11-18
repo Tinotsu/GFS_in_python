@@ -53,6 +53,12 @@ if args.tag is not None:
 
 if args.delete is not None:
     temp_list = []
+    list_full_path = []
+    delete_everywhere = True
+    for arg in args.delete:
+        if '.' in arg:
+            delete_everywhere = False
+            list_full_path.append(get_full_path(arg))
     with open(file, newline='') as infile, \
             open(temp_file, 'w', newline='') as outfile:
                 reader = csv.reader(infile)
@@ -60,16 +66,30 @@ if args.delete is not None:
                 for line in reader:
                     obj = line[0]
                     if '.' in obj:
+                        if delete_everywhere or obj in list_full_path:
+                            temp_row=[]
+                            for row_obj in line:
+                                if row_obj not in args.delete:
+                                    temp_row.append(row_obj)
+                            if len(temp_row) > 1:
+                                temp_list.append(temp_row)
+                        else:
+                            temp_list.append(line)
+                    elif delete_everywhere:
+                        if obj not in args.delete:
+                            temp_list.append(line)
+                        else:
+                            print(f'{obj} to delete')
+                    elif line[0] in args.delete:
                         temp_row=[]
                         for row_obj in line:
-                            if row_obj not in args.delete:
+                            if row_obj not in list_full_path:
                                 temp_row.append(row_obj)
-                        if len(temp_row) > 1:
+                        if len(temp_row) > 0 and temp_row not in temp_list:
                             temp_list.append(temp_row)
-                    elif obj not in args.delete:
-                        temp_list.append(line)
                     else:
-                        print(f'{obj} to delete')
+                        temp_list.append(line)
+
                 for line in temp_list:
                     writer.writerow(line)
     os.replace(temp_file, file)

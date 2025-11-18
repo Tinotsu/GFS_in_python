@@ -1,3 +1,6 @@
-/home/tino/Work/GFS/eggs.txt,green,yellow
+/home/tino/Work/GFS/eggs.txt,green,blue
 green,/home/tino/Work/GFS/eggs.txt
-yellow,/home/tino/Work/GFS/eggs.txt
+red
+blue,/home/tino/Work/GFS/eggs.txt
+pink,/home/tino/Work/GFS/test/test.pdf
+/home/tino/Work/GFS/test/test.pdf,pink
