@@ -1,5 +1,3 @@
-blue,/home/tino/Work/GFS/eggs.txt
-red,/home/tino/Work/GFS/eggs.txt
+/home/tino/Work/GFS/eggs.txt,green,yellow
+green,/home/tino/Work/GFS/eggs.txt
 yellow,/home/tino/Work/GFS/eggs.txt
-pink,/home/tino/Work/GFS/eggs.txt
-/home/tino/Work/GFS/eggs.txt,blue,red,yellow,pink,green

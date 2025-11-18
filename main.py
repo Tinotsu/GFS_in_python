@@ -52,37 +52,26 @@ if args.tag is not None:
             add_obj(tag)
 
 if args.delete is not None:
-    for tag in args.delete:
-        if '.' in tag:
-            print(f'{arg} is not a tag')
-        else:
-            with open(file, newline='') as infile, \
-                    open(temp_file, 'w', newline='') as outfile:
-                        reader = csv.reader(infile)
-                        writer = csv.writer(outfile)
-                        for line in reader:
-                            temp_list = []
-                            obj = line[0]
-                            if '.' in obj:
-                                for obj_item in line:
-                                    print(obj_item)
-                                    if obj_item not in args.delete:
-                                        print(obj_item)
-                                        temp_list.append(obj_item)
-                                if temp_list:
-                                    writer.writerow(temp_list)
-#           os.replace(temp_file, file)
-
-# NOT WORKS, NEED TO DELETE THE TAG IN THE FILE LIST
+    temp_list = []
     with open(file, newline='') as infile, \
             open(temp_file, 'w', newline='') as outfile:
                 reader = csv.reader(infile)
                 writer = csv.writer(outfile)
                 for line in reader:
                     obj = line[0]
-                    if obj not in args.delete:
-                        writer.writerow(line)
-
+                    if '.' in obj:
+                        temp_row=[]
+                        for row_obj in line:
+                            if row_obj not in args.delete:
+                                temp_row.append(row_obj)
+                        if len(temp_row) > 1:
+                            temp_list.append(temp_row)
+                    elif obj not in args.delete:
+                        temp_list.append(line)
+                    else:
+                        print(f'{obj} to delete')
+                for line in temp_list:
+                    writer.writerow(line)
     os.replace(temp_file, file)
 
 if args.file is not None:
