@@ -347,7 +347,15 @@ if args.print :
             if v is False:
                 print(f"{arg} has no tag")
         else:
-            print(f"{arg} is neither a tag nor a file")
+            v = False
+            for line in reader:
+                if arg == line[0]:
+                    v = True
+                    for item in line:
+                        if item != line[0]:
+                            print('~',item)
+            if v == False:
+                print(f"{arg} is neither a tag nor a file")
 
 if args.merge is not None:
     v = True
