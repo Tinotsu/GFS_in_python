@@ -3,7 +3,7 @@
 ## Presentation
 
 This is my first program in Python, so it may contain some bugs.
-I made this program to practice Python for a Boot.dev personal project, taking inspiration from [tsmu.org](https://tsmu.org).
+I made this program to practice Python for a Boot.dev personal project, taking inspiration from [tmsu.org](https://tmsu.org).
 GFS stands for Graph File System — the idea is to search files using their attributes.
 If you have any remarks or suggestions, feel free to tell me!
 :)
