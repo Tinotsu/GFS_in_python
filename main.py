@@ -90,18 +90,22 @@ if args.print :
                             if tag != obj:
                                 tag_list.append(tag)
                         print(f"{obj}: {', '.join(tag_list)}")
-        else:
+        elif '.' in arg and get_full_path(arg) is None:
+            print(f'{arg} is not a file')
+        elif '.' in arg:
             v = False
             for line in reader:
-                if arg == get_file_name(line[0]):
+                if get_file_name(arg) == get_file_name(line[0]):
                     v = True
                     print(f'Path: {line[0]}')
                     print('Tag:')
                     for obj in line:
                         if obj != line[0]:
                             print(f"    ~ {obj}")
-            if v == False:
-                print(f"{arg} is neither a tag nor a file")
+            if v is False:
+                print(f"{arg} has no tag")
+        else:
+            print(f"{arg} is neither a tag nor a file")
 
 if args.merge is not None:
     v = True

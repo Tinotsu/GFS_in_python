@@ -1,7 +1,7 @@
-blue,/home/tino/Work/GFS/test/file.c,/home/tino/Work/test_directoy/red_text.pdf
 red,/home/tino/Work/GFS/test/file.c,/home/tino/Work/test_directoy/red_text.pdf
 green,/home/tino/Work/GFS/test/file.c,/home/tino/Work/test_directoy/red_text.pdf
-/home/tino/Work/GFS/test/file.c,blue,red,green
-/home/tino/Work/test_directoy/red_text.pdf,blue,red,green
+/home/tino/Work/GFS/test/file.c,red,green
+/home/tino/Work/test_directoy/red_text.pdf,red,green
 yellow
 pink
+blue
