@@ -55,6 +55,13 @@ def get_sha(file):
     sha = subprocess.check_output(["sha256sum", file], text=True)
     return sha.split()[0]
 
+def is_empty(file):
+    empty = subprocess.check_output(["cat", file], text=True)
+    if empty:
+        return False
+    else:
+        return True
+
 def get_file_name(obj):
     rev_text = []
     rev_obj = obj[::-1]
@@ -69,21 +76,23 @@ def find_moved(file):
     path = os.path.expanduser("~/")
     file_name = get_file_name(file)
     file_path = subprocess.check_output(['find', path, '-name', file_name], text=True)
-    return file_path
+    list_file_path = file_path.split()
+    if len(list_file_path) >= 1:
+        return list_file_path[0]
+    # Maybe find a better way to check if it the right one...
 
 def find_renamed(obj):
     list_file_dir = os.listdir()
     result = None
     for file_dir in list_file_dir:
-        if os.path.isfile(file_dir):
+        if os.path.isfile(file_dir) and not is_empty(file_dir):
             with open(sha_file, newline='') as f:
-                list_file_sha = csv.reader(f)
-                for file_sha in list_file_sha:
+                list_sha = csv.reader(f)
+                for sha in list_sha:
                     sha_file_dir = get_sha(file_dir)
-                    if sha_file_dir == file_sha[1]:
+                    if sha_file_dir == sha[1]:
                         result = file_dir
-    return result
-
+                        return result
 
 def write_sha():
     with open(file, newline='') as infile, \
@@ -95,12 +104,11 @@ def write_sha():
                         row = get_sha(line[0])
                         new_row = [line[0], row]
                         writer.writerow(new_row)
-    
-if args.arg_tester:
-    result =get_sha(args.arg_tester[0]) 
-    print(result)
 
-if args.status:
+def check_status():
+    moved_file = {}
+    renamed_file = {}
+    okay_file = []
     with open(file, newline='') as f:
         reader = csv.reader(f)
         for line in reader:
@@ -108,15 +116,91 @@ if args.status:
             if '.' in obj:
                 exists = os.path.exists(obj)
                 if exists:
-                    print(f'file {obj} exists')
+                    okay_file.append(obj)
                 else:
-                    print(f'file {obj} not here \n')
                     moved = find_moved(obj)
                     if moved:
-                        print(f'your file is here: {moved}')
+                        moved_file[obj] = moved
                     else:
-                        modified = find_renamed(obj)
-                        print(obj,' modified in ',modified)
+                        renamed = find_renamed(obj)
+                        renamed_file[obj] = renamed
+    return moved_file, renamed_file, okay_file
+
+def repair_moved(moved):
+    list_new_line=[]
+    with open(file, newline='') as infile, \
+            open(temp_file, 'w', newline='') as outfile:
+                reader = csv.reader(infile)
+                writer = csv.writer(outfile)
+                for line in reader:
+                    new_line=[]
+                    for ele in line:
+                        if '.' in ele:
+                            if ele in moved:
+                                new_line.append(moved[ele])
+                            else:
+                                new_line.append(ele)
+                        else:
+                            new_line.append(ele)
+                    if new_line not in list_new_line:
+                        list_new_line.append(new_line)
+                for row in list_new_line:
+                    writer.writerow(row)
+    os.replace(temp_file, file)
+
+def repair_renamed(renamed):
+    list_new_line=[]
+    with open(file, newline='') as infile, \
+            open(temp_file, 'w', newline='') as outfile:
+                reader = csv.reader(infile)
+                writer = csv.writer(outfile)
+                for line in reader:
+                    new_line=[]
+                    for ele in line:
+                        if '.' in ele:
+                            if ele in renamed:
+                                new_line.append(get_full_path(renamed[ele]))
+                            else:
+                                new_line.append(ele)
+                        else:
+                            new_line.append(ele)
+                    if new_line not in list_new_line:
+                        list_new_line.append(new_line)
+                for row in list_new_line:
+                    writer.writerow(row)
+    os.replace(temp_file, file)
+                
+def repair_file():
+    result_status = check_status()
+    moved = result_status[0]
+    renamed = result_status[1]
+    list_new_line=[]
+    if moved:
+        repair_moved(moved)
+    if renamed:
+        repair_renamed(renamed)
+    
+if args.arg_tester:
+    repair_file()
+
+if args.status:
+    result_status = check_status()
+    moved = result_status[0]
+    renamed = result_status[1]
+    okay = result_status[2]
+    if moved:
+        print(f"files moved:")
+        for wrong, actual in moved.items():
+            print(f"- {wrong} is actually at {actual}")
+    if renamed:
+        print(f"files renamed:")
+        for wrong, name_actual in renamed.items():
+            name_wrong = get_file_name(wrong)
+            print(f"- {name_wrong} is now named {name_actual}")
+    if okay:
+        print(f"files okay:")
+        for file in okay:
+            print(f"- {file}")
 
 if args.print :
     arg = None
@@ -145,8 +229,6 @@ if args.print :
                             if tag != obj:
                                 tag_list.append(tag)
                         print(f"{obj}: {', '.join(tag_list)}")
-
-
         else:
             v = False
             for line in reader:

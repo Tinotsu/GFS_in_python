@@ -1,6 +1,2 @@
 /home/tino/Work/GFS/eggs.txt,37a439e8d6c94b90749ab35693ace8899ffca50039f25fb42aab19b02c5eb240
-/home/tino/Work/GFS/test/test.pdf,def80772b0dd873f23dee5dbf06e2b6d1c6078828791baab59fb7847fb3bdc11
-/home/tino/Work/GFS/test/file.c,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-/home/tino/Work/GFS/test/concept_moto2.png,b0fc5d74bb6c1f2c272f3838bd2dc27b1de50a963cd648adaea37119050b702c
-/home/tino/Work/GFS/test/concept_moto.png,2e851af7cbf6f9da550f4e0e03d7765dd8086655013cb64db98bd988b9cecb73
-/home/tino/Work/GFS/test/red_text.pdf,acc04840db8e973edca3cca6068f5ae7e85f68708ffd52880acec4a925fb723f
+/home/tino/Work/GFS/test.pdf,def80772b0dd873f23dee5dbf06e2b6d1c6078828791baab59fb7847fb3bdc11
