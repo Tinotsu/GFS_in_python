@@ -24,56 +24,60 @@ parser.add_argument('-p', '--print', type=str,
                             ") 
 parser.add_argument('-d', '--delete', type=str, nargs='*', help='The tag(s) you want to delete')
 parser.add_argument('-t', '--tag', type=str, nargs='*',\
-        help='The file(s) you want to one or multiple tags')
+                    help='The file(s) you want to one or multiple tags')
 parser.add_argument('-m', '--merge', type=str, nargs=2,\
-        help='Merge the name of a tag. The first element is the old name and the second the one.')
+                    help='Merge the name of a tag. The first element is the old name and the second the one.')
 parser.add_argument('-s', '--status', action='store_true')
 parser.add_argument('-r','--repair',action='store_true')
-parser.add_argument('-sha', '--get_sha', action='store_true')
-parser.add_argument('-a', '--arg_tester', nargs='*')
+parser.add_argument('-c','--clean',action='store_true')
 
 args = parser.parse_args()
 
-    
-if args.arg_tester:
-    repair_file()
 if args.repair:
     repair_file()
 
+if args.clean:
+    clean_file()
+
 if args.status:
     result_status = check_status()
-    moved = result_status[0]
-    renamed = result_status[1]
-    okay = result_status[2]
-    if moved:
+    if result_status[0]:
+        moved = result_status[0]
         print(f"files moved:")
         for wrong, actual in moved.items():
             print(f"- {wrong} is actually at {actual}")
-    if renamed:
+    if result_status[1]:
+        renamed = result_status[1]
         print(f"files renamed:")
         for wrong, name_actual in renamed.items():
             name_wrong = get_file_name(wrong)
             print(f"- {name_wrong} is now named {name_actual}")
-    if okay:
+    if result_status[2]:
+        okay = result_status[2]
         print(f"files okay:")
         for file in okay:
             print(f"- {file}")
+    if result_status[3]:
+        lost = result_status[3]
+        print(f"Lost or deleted files:")
+        for file in lost:
+            print(f"- {file}")
 
 if args.print :
-    arg = None
-    if '.' in args.print:
-        arg = get_full_path(args.print)
-    else:
-        arg = args.print
+    arg = args.print
     with open(file, newline='') as f:
         reader = csv.reader(f)
         if 'tag' == args.print:
                 for line in reader:
                     if '.' not in line[0]:
                         print(line[0])
+        elif 'file' == args.print:
+            for line in reader:
+                if '.' in line[0]:
+                    print(line[0])
         elif 'all' == args.print:
             for line in reader:
-                print(line)
+                print(', '.join(line))
         elif '*.' in args.print:
             ext=get_ext(args.print)
             for line in reader:
@@ -89,11 +93,13 @@ if args.print :
         else:
             v = False
             for line in reader:
-                if arg == line[0]:
+                if arg == get_file_name(line[0]):
                     v = True
+                    print(f'Path: {line[0]}')
+                    print('Tag:')
                     for obj in line:
                         if obj != line[0]:
-                            print(f"~ {obj}")
+                            print(f"    ~ {obj}")
             if v == False:
                 print(f"{arg} is neither a tag nor a file")
 

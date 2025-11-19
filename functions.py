@@ -88,10 +88,28 @@ def write_sha():
                         new_row = [line[0], row]
                         writer.writerow(new_row)
 
+def clean_file():
+    result = check_status()
+    lost = result[3]
+    with open(file, newline='') as infile, \
+            open(temp_file, 'w', newline='') as outfile:
+                reader = csv.reader(infile)
+                writer = csv.writer(outfile)
+                for line in reader:
+                    new_line = []
+                    if line[0] not in lost:
+                        for obj in line:
+                            if obj not in lost:
+                                new_line.append(obj)
+                        writer.writerow(new_line)
+    os.replace(temp_file, file)
+    write_sha()
+
 def check_status():
     moved_file = {}
     renamed_file = {}
     okay_file = []
+    lost_file = []
     with open(file, newline='') as f:
         reader = csv.reader(f)
         for line in reader:
@@ -109,8 +127,8 @@ def check_status():
                         if renamed:
                             renamed_file[obj] = renamed
                         else:
-                            return
-    return moved_file, renamed_file, okay_file
+                            lost_file.append(obj)
+    return moved_file, renamed_file, okay_file, lost_file
 
 def repair_moved(moved):
     list_new_line=[]
