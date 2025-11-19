@@ -200,7 +200,7 @@ parser.add_argument(
         "  all       → print every line from gfs.txt\n"
         "  tag       → list all tags (entries whose first element has no '.')\n"
         "  file      → list all files (entries whose first element contains a '.')\n"
-        "  .ext      → list all files with this extension and their tags\n"
+        "  *.ext      → list all files with this extension and their tags\n"
         "  filename  → show the stored path and tags for this file\n"
         "If the argument is not a file, not a tag, and not a known type, an error is printed."
     )

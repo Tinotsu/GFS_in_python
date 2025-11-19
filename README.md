@@ -98,7 +98,7 @@ Show information stored in the database.
 gfs -p all        # print all database content
 gfs -p tag        # list all tags
 gfs -p file       # list all tracked files
-gfs -p .mp3       # list .mp3 files with their tags
+gfs -p *.mp3       # list .mp3 files with their tags
 gfs -p somefile.pdf
 ```
 
